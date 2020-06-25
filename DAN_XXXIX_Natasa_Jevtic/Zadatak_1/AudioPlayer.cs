@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Zadatak_1
 {
@@ -85,6 +86,59 @@ namespace Zadatak_1
             if (!Songs.Any())
             {
                 Console.WriteLine("There are no songs.");
+            }
+        }
+        /// <summary>
+        /// This method finds song in collection based on forwarded id.
+        /// </summary>
+        /// <param name="id">Finded song.</param>
+        /// <returns></returns>
+        public Song FindingSong(int id)
+        {
+            return Songs.Where(x => x.ID == id).FirstOrDefault();
+        }
+        /// <summary>
+        /// This method sends signal that song is runned.
+        /// </summary>
+        /// <param name="song"></param>
+        public void PlayingSong(Song song)
+        {
+            Console.WriteLine("Song release time: {0}, name of song: {1}", DateTime.Now.ToString("HH:mm:ss tt"), song.Name);
+            //sending signal that song start running
+            Program.songIsRunning.Set();
+        }
+        /// <summary>
+        /// This method reads ads from file and puts them in collection.
+        /// </summary>
+        public void ReadAdsFromTxt()
+        {
+            try
+            {
+                string[] lines = File.ReadAllLines(@"../../Reklame.txt");
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    Ads.Add(lines[i]);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("The file was not found.");
+            }
+        }
+        /// <summary>
+        /// This method waits for signal that song is runned and displays ads to console for every 200 milliseconds.
+        /// </summary>
+        /// <param name="song"></param>
+        public void RunningAds(Song song)
+        {
+            Program.songIsRunning.WaitOne();
+            Random randomAds = new Random();
+            double counter = song.Duration.TotalMilliseconds;
+            while (counter != 200)
+            {
+                Thread.Sleep(200);
+                Console.WriteLine(Ads[randomAds.Next(0, Ads.Count)]);
+                counter -= 200;
             }
         }
     }
