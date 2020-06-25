@@ -73,5 +73,19 @@ namespace Zadatak_1
             }
             writer.Close();
         }
+        /// <summary>
+        /// This method displays all songs to console.
+        /// </summary>
+        public void ViewAll()
+        {
+            foreach (Song song in Songs)
+            {
+                Console.WriteLine(song.ID + ". " + song.Author + ": " + song.Name + " " + song.Duration);
+            }
+            if (!Songs.Any())
+            {
+                Console.WriteLine("There are no songs.");
+            }
+        }
     }
 }
