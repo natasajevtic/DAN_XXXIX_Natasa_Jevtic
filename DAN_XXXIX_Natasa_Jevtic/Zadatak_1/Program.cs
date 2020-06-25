@@ -9,6 +9,7 @@ namespace Zadatak_1
         public static EventWaitHandle songIsRunning = new ManualResetEvent(false);
         static bool againChoose;
         static EventWaitHandle againPlaySong = new AutoResetEvent(false);
+        public delegate void Notification();
         /// <summary>
         /// This method waits for signal that song is runned and then for every 1000 miliseconds of song duration displays that song is running 
         /// </summary>
@@ -46,12 +47,19 @@ namespace Zadatak_1
             }
         }
         /// <summary>
-        /// This method waits for signal if user choice to listen music again.
+        /// This method waits for a signal if the user chooses to listen music again.
         /// </summary>
         static void PlayAgain()
         {
             againPlaySong.WaitOne();
             againChoose = true;
+        }
+        /// <summary>
+        /// This method displays that audio player is turning off.
+        /// </summary>
+        static void ShutDown()
+        {
+            Console.WriteLine("Audio player is turning off...");
         }
         /// <summary>
         /// This method displays user different options and performs actions based on user choice.
@@ -63,6 +71,7 @@ namespace Zadatak_1
             player.ReadSongsFromTxt();
             player.ReadAdsFromTxt();
             Song song = new Song();
+            Notification notification = ShutDown;
             string option = "";
             do
             {
@@ -85,7 +94,7 @@ namespace Zadatak_1
                         do
                         {
                             player.ViewAll();
-                            Console.WriteLine("Choose which song want to listen:");
+                            Console.WriteLine("Choose which song to listen:");
                             string songNumber = Console.ReadLine();
                             bool conversion = Int32.TryParse(songNumber, out int songID);
                             //checking for existing song
@@ -94,18 +103,23 @@ namespace Zadatak_1
                                 Console.WriteLine("Invalid input. Try again:");
                                 songNumber = Console.ReadLine();
                                 conversion = Int32.TryParse(songNumber, out songID);
-                            }                            
+                            }  
+                            //finding song from collection
                             Song findedSong = player.FindingSong(songID);
                             player.PlayingSong(findedSong);
                             Thread isSongRunning = new Thread(() => IsSongRunning(findedSong));
                             Thread runningAds = new Thread(() => player.RunningAds(findedSong));
-                            Thread playAgain = new Thread(PlayAgain);
+                            Thread playAgain = new Thread(PlayAgain) { IsBackground = true };
                             playAgain.Start();
                             runningAds.Start();
                             isSongRunning.Start();
                             runningAds.Join();
                             isSongRunning.Join();
-                        } while (againChoose == true);                        
+                        } while (againChoose == true);
+                        if (againChoose == false)
+                        {
+                            notification();
+                        }
                         break;
                     case "4":
                         break;

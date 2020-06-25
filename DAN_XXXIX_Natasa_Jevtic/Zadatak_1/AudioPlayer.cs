@@ -41,8 +41,8 @@ namespace Zadatak_1
                 for (int i = 0; i < lines.Length; i++)
                 {
                     Song song = new Song();
-                    list = lines[i].Split(' ').ToList();
-                    song.Author = list[0].Trim(':');
+                    list = lines[i].Split(',').ToList();
+                    song.Author = list[0];
                     song.Name = list[1];
                     TimeSpan.TryParse(list[2], out TimeSpan interval);
                     song.Duration = interval;
@@ -69,7 +69,7 @@ namespace Zadatak_1
             string output;
             foreach (Song song in Songs)
             {
-                output = song.Author + ": " + song.Name + " " + song.Duration;
+                output = song.Author + "," + song.Name + "," + song.Duration;
                 writer.WriteLine(output);
             }
             writer.Close();
@@ -81,7 +81,7 @@ namespace Zadatak_1
         {
             foreach (Song song in Songs)
             {
-                Console.WriteLine(song.ID + ". " + song.Author + ": " + song.Name + " " + song.Duration);
+                Console.WriteLine("{0}. [{1}]: [{2}] [{3}]", song.ID, song.Author, song.Name, song.Duration);
             }
             if (!Songs.Any())
             {
@@ -103,7 +103,7 @@ namespace Zadatak_1
         /// <param name="song"></param>
         public void PlayingSong(Song song)
         {
-            Console.WriteLine("Song release time: {0}, name of song: {1}", DateTime.Now.ToString("HH:mm:ss tt"), song.Name);
+            Console.WriteLine("Song {1} started at {0}.", DateTime.Now.ToString("HH:mm:ss"), song.Name);
             //sending signal that song start running
             Program.songIsRunning.Set();
         }

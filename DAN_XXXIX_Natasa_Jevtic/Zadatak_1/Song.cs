@@ -38,8 +38,9 @@ namespace Zadatak_1
             {
                 Console.WriteLine("Invalid input. Try again:");
                 duration = Console.ReadLine();
+                conversion = TimeSpan.TryParseExact(duration, "hh\\:mm\\:ss", CultureInfo.CurrentCulture, out interval);
             }
-            Song newSong = new Song(name, author, interval);
+            Song newSong = new Song(author, name, interval);
             return newSong;
         }
     }
